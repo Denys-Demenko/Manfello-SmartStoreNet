@@ -1171,6 +1171,8 @@ namespace SmartStore.Admin.Controllers
 			var socialSettings = _services.Settings.LoadSetting<SocialSettings>(storeScope);
 			model.SocialSettings.ShowSocialLinksInFooter = socialSettings.ShowSocialLinksInFooter;
 			model.SocialSettings.FacebookLink = socialSettings.FacebookLink;
+            model.SocialSettings.VKLink = socialSettings.VKLink;
+            model.SocialSettings.InstagramLink = socialSettings.InstagramLink;
 			model.SocialSettings.GooglePlusLink = socialSettings.GooglePlusLink;
 			model.SocialSettings.TwitterLink = socialSettings.TwitterLink;
 			model.SocialSettings.PinterestLink = socialSettings.PinterestLink;
@@ -1357,6 +1359,8 @@ namespace SmartStore.Admin.Controllers
 			var socialSettings = _services.Settings.LoadSetting<SocialSettings>(storeScope);
 			socialSettings.ShowSocialLinksInFooter = model.SocialSettings.ShowSocialLinksInFooter;
 			socialSettings.FacebookLink = model.SocialSettings.FacebookLink;
+            socialSettings.VKLink = model.SocialSettings.VKLink;
+            socialSettings.InstagramLink = model.SocialSettings.InstagramLink;
 			socialSettings.GooglePlusLink = model.SocialSettings.GooglePlusLink;
 			socialSettings.TwitterLink = model.SocialSettings.TwitterLink;
 			socialSettings.PinterestLink = model.SocialSettings.PinterestLink;

@@ -8,6 +8,8 @@ namespace SmartStore.Core.Domain.Common
 		{
 			ShowSocialLinksInFooter = true;
 			FacebookLink = "#";
+		    VKLink = "#";
+            InstagramLink = "#";
 			GooglePlusLink = "#";
 			TwitterLink = "#";
 			PinterestLink = "#";
@@ -22,6 +24,16 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets the facebook link
         /// </summary>
         public string FacebookLink { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vk link
+        /// </summary>
+        public string VKLink { get; set; }
+
+        /// <summary>
+        /// Gets or sets the instagram link
+        /// </summary>
+        public string InstagramLink { get; set; }
 
         /// <summary>
         /// Gets or sets the google plus link

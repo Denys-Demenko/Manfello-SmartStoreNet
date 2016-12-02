@@ -621,22 +621,23 @@ namespace SmartStore.Web.Controllers
 				model.LegalInfo = T("Tax.LegalInfoFooter2", taxInfo);
 			}
 
-			var hint = _services.Settings.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
-			if (hint.IsEmpty())
-			{
-				hint = s_hints[new Random().Next(s_hints.Length)];
-				_services.Settings.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
-			}
+            //var hint = _services.Settings.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
+            //if (hint.IsEmpty())
+            //{
+            //    hint = s_hints[new Random().Next(s_hints.Length)];
+            //    _services.Settings.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
+            //}
 
             model.ShowSocialLinks = _socialSettings.Value.ShowSocialLinksInFooter;
             model.FacebookLink = _socialSettings.Value.FacebookLink;
+            model.VKLink = _socialSettings.Value.VKLink;
+            model.InstagramLink = _socialSettings.Value.InstagramLink;
             model.GooglePlusLink = _socialSettings.Value.GooglePlusLink;
             model.TwitterLink = _socialSettings.Value.TwitterLink;
             model.PinterestLink = _socialSettings.Value.PinterestLink;
             model.YoutubeLink = _socialSettings.Value.YoutubeLink;
 
-			model.SmartStoreHint = "<a href='http://www.smartstore.com/net' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
-				.FormatCurrent(hint, DateTime.Now.Year);
+			//model.SmartStoreHint = "<a href='http://www.smartstore.com/net' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}".FormatCurrent(hint, DateTime.Now.Year);
 
             return PartialView(model);
         }

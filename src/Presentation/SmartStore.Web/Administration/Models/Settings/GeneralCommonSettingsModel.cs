@@ -332,6 +332,12 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookLink")]
             public string FacebookLink { get; set; }
 
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.VKLink")]
+            public string VKLink { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.InstagramLink")]
+            public string InstagramLink { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.GooglePlusLink")]
             public string GooglePlusLink { get; set; }
 
