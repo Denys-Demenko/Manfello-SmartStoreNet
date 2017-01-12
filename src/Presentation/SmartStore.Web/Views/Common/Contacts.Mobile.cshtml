@@ -1,0 +1,14 @@
+﻿@model ContactsModel
+@using SmartStore.Web.Models.Common;
+
+<span class="contacts-bar">
+    @foreach (var contact in Model.Contacts)
+    {
+        <span style="margin-left: 10px">
+            <a target="_self" href="@contact.Link">
+                <i class="fa @contact.IconClass"></i>
+                <span>@contact.Contact</span>
+            </a>
+        </span>
+    }
+</span>

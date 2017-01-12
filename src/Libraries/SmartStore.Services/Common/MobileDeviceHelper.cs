@@ -36,6 +36,8 @@ namespace SmartStore.Services.Common
             this._workContext = workContext;
 			this._storeContext = storeContext;
 			this._userAgent = userAgent;
+
+            //_themeSettings.EmulateMobileDevice = true;
         }
 
         #endregion
@@ -66,6 +68,8 @@ namespace SmartStore.Services.Common
         /// </summary>
         public virtual bool CustomerDontUseMobileVersion()
         {
+            //return false;
+
 			return _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.DontUseMobileVersion, _storeContext.CurrentStore.Id);
         }
 

@@ -348,6 +348,8 @@
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
+    <Compile Include="Models\Common\ContactsModel.cs" />
+    <Compile Include="Models\Common\PhonesModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
     <Compile Include="Models\Common\AddressModel.cs" />
@@ -786,6 +788,7 @@
     <Content Include="Content\x-editable\bootstrap-editable.js" />
     <Content Include="Content\x-editable\bootstrap-editable.min.js" />
     <Content Include="favicon.ico" />
+    <Content Include="favicon-1.ico" />
     <Content Include="Content\install\install.less" />
     <Content Include="Content\install\variables.custom.less" />
     <Content Include="Content\install\variables.less" />
@@ -946,6 +949,8 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Scripts\underscore.min.js" />
+    <Content Include="Settings.txt" />
+    <Content Include="Settings.Ce.txt" />
     <Content Include="Themes\AlphaBlack\preview.png" />
     <Content Include="Themes\AlphaBlue\preview.png" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
@@ -1581,6 +1586,10 @@
     <Content Include="Views\Common\EntityPicker.cshtml" />
     <Content Include="Views\Common\EntityPickerList.cshtml" />
     <Content Include="Views\Widget\TabWidgets.cshtml" />
+    <Content Include="Views\Common\Phones.cshtml" />
+    <Content Include="Views\Common\Contacts.cshtml" />
+    <Content Include="Views\Common\Phones.Mobile.cshtml" />
+    <Content Include="Views\Common\Contacts.Mobile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

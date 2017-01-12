@@ -1,8 +1,8 @@
 ﻿@model CategoryModel
 
 @{
-	Layout = "~/Views/Shared/_ColumnsThree.cshtml";
-	//Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	//Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
 	Html.AddMetaDescriptionParts(Model.MetaDescription);
 	Html.AddMetaKeywordParts(Model.MetaKeywords);
@@ -25,32 +25,38 @@
 
 @functions
 {
-	private bool ShowListOptions()
-	{
-		return Model.Products.Count > 0 &&
-			   (Model.PagingFilteringContext.AllowProductViewModeChanging ||
-			   Model.PagingFilteringContext.AllowProductSorting ||
-			   Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
-	}
+    private bool ShowListOptions()
+    {
+        return Model.Products.Count > 0 &&
+               (Model.PagingFilteringContext.AllowProductViewModeChanging ||
+               Model.PagingFilteringContext.AllowProductSorting ||
+               Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
+    }
+
+    private int ItemsPerRow()
+    {
+        return 4;
+    }
 }
 
 @helper SubCategoryList()
 {
 	<div class="category-grid sub-category-grid">
-		@(Html.DataList<CategoryModel.SubCategoryModel>(Model.SubCategories, 3,
+		@(Html.DataList<CategoryModel.SubCategoryModel>(Model.SubCategories, ItemsPerRow(),
 			@<article class="item-box equalized-column" data-equalized-column-name="subcat">
 				<div class="category-item sub-category-item">
 					<h2 class="category-title">
 						<a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
 					</h2>
-					<div class="picture">
-						@if (item.PictureModel.ImageUrl.HasValue())
-						{
-							<a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-								<img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
-							</a>
-						}
-					</div>
+					@if (item.PictureModel.ImageUrl.HasValue())
+                    {
+                        <div class="picture">
+
+                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
+                                <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
+                            </a>
+                        </div>
+                    }
 				</div>
 			</article>
 		))
@@ -149,7 +155,7 @@
 	           else {
 				    @*grid mode*@
 				    <div class="product-grid">
-					    @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
+					    @(Html.DataList<ProductOverviewModel>(Model.Products, ItemsPerRow(),
 						    @<article class="item-box">
 							    @Html.Partial("_ProductBox", item)
 						    </article>
@@ -179,11 +185,10 @@
     </div>
 </div>
 
-@section right_top
+@*@section right_top
 {
     @Html.Widget("categorydetails_before_filters")
 
-    @*filtering*@
 	@if (Model.Products.Count > 0 && Model.DisplayFilter)
     {
 		<div id="product-filter" class="block block-bordered product-filter-block">
@@ -220,4 +225,4 @@
 			});
 		</script>
 	}
-}
+}*@

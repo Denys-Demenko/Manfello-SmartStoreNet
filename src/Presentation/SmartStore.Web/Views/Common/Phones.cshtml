@@ -1,0 +1,14 @@
+﻿@model PhonesModel
+@using SmartStore.Web.Models.Common;
+
+<div id="phones-bar">
+    @foreach (var phone in Model.Phones)
+    {
+        <div>
+            <a href="tel:@phone.Number">
+                <i class="fa fa-call"></i>
+                <span>@phone.OutputNumber</span>
+            </a>
+        </div>
+    }
+</div>

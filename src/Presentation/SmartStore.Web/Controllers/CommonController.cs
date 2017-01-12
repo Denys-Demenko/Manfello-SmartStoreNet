@@ -668,6 +668,28 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
+        // TODO: read phones from store settings
+        [ChildActionOnly]
+        public ActionResult Phones()
+        {
+            var model = new PhonesModel();
+            model.Phones.Add(new PhoneModel() { OutputNumber = "(068) 291-44-55" });
+            model.Phones.Add(new PhoneModel() { OutputNumber = "(099) 291-44-55" });
+            model.Phones.Add(new PhoneModel() { OutputNumber = "(063) 291-44-55" });
+
+            return PartialView(model);
+        }
+
+        // TODO: read phones from store settings
+        [ChildActionOnly]
+        public ActionResult Contacts()
+        {
+            var model = new ContactsModel();
+            model.Contacts.Add(new ContactModel() { Contact = "info@manfello.com.ua" });
+
+            return PartialView(model);
+        }
+
         //info block
         [ChildActionOnly]
         public ActionResult InfoBlock()

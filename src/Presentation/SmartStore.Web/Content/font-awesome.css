@@ -1,13 +1,9 @@
-/*!
- *  Font Awesome 4.5.0 by @davegandy - http://fontawesome.io - @fontawesome
- *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
- */
 /* FONT PATH
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
   src: url('fonts/fontawesome-webfont.eot?v=4.5.0');
-  src: url('fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  src: url('fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -566,6 +562,46 @@
 .fa-instagram-square:before {
   content: "\f16d";
 }
+
+.fa-call:before {
+  content: "\f095";
+}
+.fa-castle:before {
+  content: "\f286";
+}
+
+.fa-fresh:before {
+  content: "\f297";
+}
+.fa-plate:before {
+  content: "\f298";
+}
+.fa-mix:before {
+  content: "\f299";
+}
+.fa-like:before {
+  content: "\f29a";
+}
+.fa-delivery:before {
+  content: "\f29b";
+}
+.fa-clock:before {
+  content: "\f29c";
+}
+.fa-cert:before {
+  content: "\f29d";
+}
+.fa-cake:before {
+  content: "\f2a0";
+}
+.fa-award:before {
+  content: "\f2a1";
+}
+.fa-300:before {
+  content: "\f2a2";
+}
+
+
 .fa-camera-retro:before {
   content: "\f083";
 }
