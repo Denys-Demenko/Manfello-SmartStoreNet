@@ -6,6 +6,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.WebPages;
 using FluentValidation.Mvc;
+using NLog;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
@@ -29,8 +30,9 @@ namespace SmartStore.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppRegisterGlobalFiltersEvent {
@@ -58,9 +60,11 @@ namespace SmartStore.Web
         }
 
         protected void Application_Start()
-        {	
-			// we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
-			var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
+        {
+            _logger.Info("Application was started");
+
+            // we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
+            var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
 

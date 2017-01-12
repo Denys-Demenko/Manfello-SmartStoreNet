@@ -71,6 +71,7 @@
 		<CallTarget Targets="Clean"/>
 		<CallTarget Targets="Compile"/>
 		<CallTarget Targets="Stage"/>
+		<CallTarget Targets="Package-Zip"/>
 	</Target>
 	
 	<Target Name="DeployFull">

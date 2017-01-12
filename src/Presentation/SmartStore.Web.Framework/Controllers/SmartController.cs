@@ -8,6 +8,8 @@ using SmartStore.Services;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using ILogger = SmartStore.Core.Logging.ILogger;
+using NullLogger = SmartStore.Core.Logging.NullLogger;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -16,11 +18,16 @@ namespace SmartStore.Web.Framework.Controllers
 	[JsonNet]
 	public abstract partial class SmartController : Controller
 	{
+	    private readonly NLog.ILogger _logger;
+
 		protected SmartController()
 		{
 			this.Logger = NullLogger.Instance;
 			this.T = NullLocalizer.Instance;
+		    this.TraceLogger = NLog.LogManager.GetLogger(GetType().FullName);
 		}
+
+	    public NLog.ILogger TraceLogger { get; private set; }
 
 		public ILogger Logger
 		{
