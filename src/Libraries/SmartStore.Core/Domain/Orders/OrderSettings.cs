@@ -7,7 +7,8 @@ namespace SmartStore.Core.Domain.Orders
     {
 		public OrderSettings()
 		{
-			IsReOrderAllowed = true;
+            MaxDesignFileSize = 10 * 1024 * 1024;
+            IsReOrderAllowed = true;
 			AnonymousCheckoutAllowed = true;
 			TermsOfServiceEnabled = true;
 			ReturnRequestsEnabled = true;
@@ -17,8 +18,13 @@ namespace SmartStore.Core.Domain.Orders
 			MinimumOrderPlacementInterval = 30;
 			OrderListPageSize = 10;
 		}
-		
-		/// <summary>
+
+        /// <summary>
+        /// Gets or sets a value indicating the size of a file which customer could attach to his order
+        /// </summary>
+        public int MaxDesignFileSize { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether customer can make re-order
         /// </summary>
         public bool IsReOrderAllowed { get; set; }

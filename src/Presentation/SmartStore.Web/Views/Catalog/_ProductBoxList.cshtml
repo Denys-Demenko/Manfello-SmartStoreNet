@@ -68,17 +68,18 @@
                 <span>@Model.Name</span>
             </a>
         </h3>
-        @if (Model.ShortDescription.HasValue()) 
+    
+        @*@if (Model.ShortDescription.HasValue()) 
         {
         <p class="description" title="@Model.ShortDescription">
             @Html.Raw(Model.ShortDescription)
         </p>
-        }
+        }*@
 
         <div class="clearfix">
-            <div class="pull-left attribute-block">
+            <div class="pull-left attribute-block" style="width: 30%">
 
-                <table class="attributes" style="width:100%">
+                <table class="attributes" style="width: 100%">
 
                     @if (Model.ShowDeliveryTimes)
                     {
@@ -89,82 +90,90 @@
                                     <span><strong>@T("Products.DeliveryTime")</strong></span>
                                 </td>
 
-                                @if(Model.DisplayDeliveryTimeAccordingToStock)
+                                @if (Model.DisplayDeliveryTimeAccordingToStock)
                                 {
                                     <td>
-                                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
+                                        <span class="delivery-time-color" style="background-color: @Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
                                     </td>
                                 }
-                                else {
+                                else
+                                {
                                     <td>
-                                        <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+                                        <span class="delivery-time-color" style="background-color: #9d261d" title="@Model.StockAvailablity"></span>
                                     </td>
                                 }
                             </tr>
                         }
                     }
 
-                    @if (Model.ShowSku && !String.IsNullOrWhiteSpace(Model.Sku)) 
+                    @if (Model.ShowSku && !String.IsNullOrWhiteSpace(Model.Sku))
                     {
-                    <tr valign="top">
-                        <td class="attr-label"><strong>@T("Products.Sku"):</strong></td>
-                        <td>@Model.Sku</td>
-                    </tr>
+                        <tr valign="top">
+                            <td class="attr-label"><strong>@T("Products.Sku"):</strong></td>
+                            <td>@Model.Sku</td>
+                        </tr>
                     }
 
                     @if (Model.Manufacturers.Count > 0)
                     {
-                    <tr valign="top">
-                        <td class="attr-label"><strong>@(Model.Manufacturers.Count == 1 ? T("Products.Manufacturer") : T("Products.Manufacturers")):</strong></td>
-                        <td>
-                            @for (int i = 0; i < Model.Manufacturers.Count; i++)
-                            {
-                                var item = Model.Manufacturers[i];
-                                <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", item.SeName } })">@item.Name</a>
-                                if (i != Model.Manufacturers.Count - 1)
+                        <tr valign="top">
+                            <td class="attr-label"><strong>@(Model.Manufacturers.Count == 1 ? T("Products.Manufacturer") : T("Products.Manufacturers")):</strong></td>
+                            <td>
+                                @for (int i = 0; i < Model.Manufacturers.Count; i++)
                                 {
-                                <text>,</text>
+                                    var item = Model.Manufacturers[i];
+                                    <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary {{"SeName", item.SeName}})">@item.Name</a>
+                                    if (i != Model.Manufacturers.Count - 1)
+                                    {
+                                        <text>,</text>
+                                    }
                                 }
-                            }
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     }
 
                     @if (Model.ShowWeight && Model.Weight.HasValue())
                     {
-                    <tr valign="top">
-                        <td class="attr-label"><strong>@T("Products.Weight"):</strong></td>
-                        <td>@Model.Weight</td>
-                    </tr>
+                        <tr valign="top">
+                            <td class="attr-label"><strong>@T("Products.Weight"):</strong></td>
+                            <td>@Model.Weight</td>
+                        </tr>
                     }
 
                     @if (Model.ShowDimensions)
                     {
-                    <tr valign="top">
-                        <td class="attr-label"><strong>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</strong></td>
-                        <td>@Model.Dimensions</td>
-                    </tr>
+                        <tr valign="top">
+                            <td class="attr-label"><strong>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</strong></td>
+                            <td>@Model.Dimensions</td>
+                        </tr>
                     }
 
                 </table>
-                        
+
                 @if (Model.Manufacturers.Any(x => x.PictureModel != null))
                 {
                     <div class="manufacturer-pics">
 
-                    @foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null))
-                    {
-                        <div class="manufacturer-item">
-                            <div class="picture">
-                                <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", manufacturer.SeName } })" title="@manufacturer.PictureModel.Title">
-                                    <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
+                        @foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null))
+                        {
+                            <div class="manufacturer-item">
+                                <div class="picture">
+                                    <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary {{"SeName", manufacturer.SeName}})" title="@manufacturer.PictureModel.Title">
+                                        <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title"/></a>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
                     </div>
                 }
             </div>
+
+            <div class="pull-left decription-block">
+                <p class="description" title="@Model.ShortDescription">
+                    @Html.Raw(Model.FullDescription)
+                </p>
+            </div>
+
             <div class="pull-right price-block">
                 <div class="prices">
                     @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))

@@ -41,7 +41,12 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Home", action = "ContactUs" },
 				new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("ShoppingCart",
+            routes.MapLocalizedRoute("OrderCake",
+                "ordercake",
+                new { controller = "Home", action = "OrderCake" },
+                new[] { "SmartStore.Web.Controllers" });
+
+            routes.MapLocalizedRoute("ShoppingCart",
 				"cart/",
 				new { controller = "ShoppingCart", action = "Cart" },
 				new[] { "SmartStore.Web.Controllers" });

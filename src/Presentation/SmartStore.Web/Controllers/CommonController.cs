@@ -23,6 +23,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -333,11 +334,15 @@ namespace SmartStore.Web.Controllers
                 var pictureService = _pictureService.Value;
 				int logoPictureId = _services.StoreContext.CurrentStore.LogoPictureId;
 
+			    TraceLogger.Info("id: " + logoPictureId);
+
                 Picture picture = null;
                 if (logoPictureId > 0)
                 {
                     picture = pictureService.GetPictureById(logoPictureId);
                 }
+
+                TraceLogger.Info("picture is null: " + (picture == null));
 
                 string logoUrl = null;
                 var logoSize = new Size();
@@ -345,6 +350,9 @@ namespace SmartStore.Web.Controllers
                 {
                     logoUrl = pictureService.GetPictureUrl(picture);
                     logoSize = pictureService.GetPictureSize(picture);
+
+                    TraceLogger.Info("logoUrl: " + logoUrl);
+                    TraceLogger.Info("logoSize: " + logoSize);
                 }
 
                 return new ShopHeaderModel()
@@ -680,7 +688,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        // TODO: read phones from store settings
+        // TODO: read e-mail from store settings
         [ChildActionOnly]
         public ActionResult Contacts()
         {
@@ -688,6 +696,12 @@ namespace SmartStore.Web.Controllers
             model.Contacts.Add(new ContactModel() { Contact = "info@manfello.com.ua" });
 
             return PartialView(model);
+        }
+
+        [ChildActionOnly]
+        public ActionResult OrderAndPay()
+        {
+            return PartialView();
         }
 
         //info block

@@ -770,9 +770,10 @@ namespace SmartStore.Web.Controllers
 
             if (!product.IsShipEnabled || (addShippingPrice == 0 && product.IsFreeShipping))
             {
-                model.LegalInfo += "{0} {1}, {2}".FormatInvariant(
+                model.LegalInfo += "{0} {1}{2} {3}".FormatInvariant(
                     product.IsTaxExempt ? "" : taxInfo,
                     product.IsTaxExempt ? "" : defaultTaxRate,
+                    product.IsTaxExempt ? "" : ",",
                     T("Common.FreeShipping"));
             }
             else
@@ -1160,7 +1161,8 @@ namespace SmartStore.Web.Controllers
 					Id = product.Id,
 					Name = product.GetLocalized(x => x.Name).EmptyNull(),
 					ShortDescription = product.GetLocalized(x => x.ShortDescription),
-					SeName = product.GetSeName()
+                    FullDescription = product.GetLocalized(x => x.FullDescription),
+                    SeName = product.GetSeName()
 				};
 
 				if (prepareFullDescription)

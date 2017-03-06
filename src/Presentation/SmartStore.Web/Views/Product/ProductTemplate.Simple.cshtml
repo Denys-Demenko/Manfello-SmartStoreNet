@@ -55,17 +55,21 @@
                         </div>
                         @Html.Widget("productdetails_after_pictures")
 
-                        <div class="manufacturer-pics manufacturer-pics-container">
-							@foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null && x.PictureModel.ImageUrl.HasValue()))
-							{
-								<div class="manufacturer-item">
-									<div class="picture">
-										<a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
-											<img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
-									</div>
-								</div>
-							}
-                        </div>
+                        @if (Model.Manufacturers.Any())
+                        {
+                            <div class="manufacturer-pics manufacturer-pics-container">
+                                @foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null && x.PictureModel.ImageUrl.HasValue()))
+                                {
+                                    <div class="manufacturer-item">
+                                        <div class="picture">
+                                            <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+                                                <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
 
                         <!-- attributes -->
                         <table id="ProductAttributes" class="attributes">
@@ -176,9 +180,9 @@
 
                     <div id="details-cnt">
 
-                        <div class="short-description line alpha">
+                        @*<div class="short-description line alpha">
                             @Html.Raw(Model.ShortDescription)
-                        </div>
+                        </div>*@
 
                         @if (Model.ProductType == ProductType.BundledProduct)
                         {
@@ -187,102 +191,47 @@
 							</div>
                         }
 
-                        <!--product reviews-->
-                        @if (Model.DisplayProductReviews) { 
-                            @Html.Action("ReviewOverview", new { id = Model.Id })
-                        }
-                        
-                        <!-- product attributes or bundle items -->
-                        @{
-							if (Model.ProductType == ProductType.BundledProduct)
-							{
-								<div id="ProductBundleItems" class="product-bundle">
-									@if (Model.RenderBundleTitle())
-									{
-										<div class="bundle-title">
-											<h4>@Model.BundleTitleText</h4>
-										</div>
-									}
-									<div class="bundle-items">										
-										@Html.Partial("_BundleItems")
-									</div>
-									@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
-									{
-										<div class="no-bundled-products alert alert-warning" style="margin-top: 10px">
-											@T("Products.NoBundledItems")
-										</div>
-									}
-								</div>
-							}
-							else if (Model.ProductVariantAttributes.ShouldBeRendered())
-							{
-								var dataDictAttributes = new ViewDataDictionary();
-								dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-
-								<div class="product-attributes line">
-									@Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)                  
-								</div>
-							}
-                        }
-                    
-                        <!-- giftcard infos -->                    
-                        @{
-                            var dataDictGiftCard = new ViewDataDictionary();
-                            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
-                            if (Model.GiftCard.IsGiftCard)
-                            {
-                                <div class="giftcard-infos line">
-                                    @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
-                                </div>
-                            }
-                        }
-                    
                         <!-- addd to cart -->
                         <div id="AddToCart" class="@(Model.ProductType == ProductType.BundledProduct ? "bundled-product" : "")">
                             @{
-                            var dataDictAddToCart = new ViewDataDictionary();
-                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-                            @Html.Partial("_AddToCart", Model, dataDictAddToCart)
+                                var dataDictAddToCart = new ViewDataDictionary();
+                                dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+                                @Html.Partial("_AddToCart", Model, dataDictAddToCart)
                             }
                         </div>
 
-                    <!-- quick links -->
-                    <div class="quick-links line">
-                        @if (Model.HasSampleDownload)
+                        <!-- tabs -->
+                        @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
                         {
-                        <div>
-                            <a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
-                                <i class="fa fa-download"></i>
-                                @T("Products.DownloadSample")
-                            </a>
-                        </div>
-                        }
-                        @Html.Action("EmailAFriendButton", new { id = Model.Id })
-                        @Html.Action("AskQuestionButton", new { id = Model.Id })
-                        @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
-                        @if (!Model.AddToCart.DisableWishlistButton)
-                        {
-                        <div>
-                            <a data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
-                                href="#"
-                                class="ajax-cart-link" 
-							    rel="nofollow"
-                                data-form-selector="#product-details-form"
-                                data-type="wishlist"
-                                data-action="add">
-                                <i class="fa fa-fw fa-heart"></i>
-                                @T("ShoppingCart.AddToWishlist")
-                            </a>
-                        </div>
-                        }
-                    </div>
+                            var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+                            var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
 
-                    <!-- social share -->
-                    @Html.Action("ShareButton")
+                            if (!String.IsNullOrWhiteSpace(Model.FullDescription))
+                            {
+                                x.Add().Text(@T("Products.Details"))
+                                        .Content(Html.Raw("<div itemprop='description'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+                                        .Selected(true);
+                            }
 
-                    <!-- tier prices -->
-                    @Html.Action("ProductTierPrices", new { productId = Model.Id })
-                
+                            if (!String.IsNullOrWhiteSpace(specificationAttributes))
+                            {
+                                x.Add().Text(@T("Products.Specs"))
+                                        .Content(specificationAttributes)
+                                        .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+                            }
+
+                            if (reviews.HasValue() && Model.DisplayProductReviews)
+                            {
+                                x.Add().Text(@T("Reviews.ExistingReviews"))
+                                        .Content(reviews)
+                                        .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+                                        .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                            }
+
+                            //generate an event
+                            EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
+                        })
+
                     </div>
                         
                     @Html.Widget("productdetails_overview_bottom") 
@@ -292,37 +241,90 @@
             
             <div class="bottom-content">
 
-                <!-- tabs -->
-                @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
+                <!--product reviews-->
+                @if (Model.DisplayProductReviews)
                 {
-                    var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
-                    var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+                    @Html.Action("ReviewOverview", new { id = Model.Id })
+                }
 
-                    if (!String.IsNullOrWhiteSpace(Model.FullDescription))
+                <!-- product attributes or bundle items -->
+                @{if (Model.ProductType == ProductType.BundledProduct)
                     {
-                        x.Add().Text(@T("Products.Details"))
-								.Content(Html.Raw("<div itemprop='description'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
-                                .Selected(true);
+                        <div id="ProductBundleItems" class="product-bundle">
+                            @if (Model.RenderBundleTitle())
+                            {
+                                <div class="bundle-title">
+                                    <h4>@Model.BundleTitleText</h4>
+                                </div>
+                            }
+                            <div class="bundle-items">
+                                @Html.Partial("_BundleItems")
+                            </div>
+                            @if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
+                            {
+                                <div class="no-bundled-products alert alert-warning" style="margin-top: 10px">
+                                    @T("Products.NoBundledItems")
+                                </div>
+                            }
+                        </div>
                     }
-
-                    if (!String.IsNullOrWhiteSpace(specificationAttributes))
+                    else if (Model.ProductVariantAttributes.ShouldBeRendered())
                     {
-                        x.Add().Text(@T("Products.Specs"))
-                                .Content(specificationAttributes)
-                                .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
-                    }
+                        var dataDictAttributes = new ViewDataDictionary();
+                        dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
 
-                    if (reviews.HasValue() && Model.DisplayProductReviews)
+                        <div class="product-attributes line">
+                            @Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)
+                        </div>
+                    }
+                }
+
+                <!-- giftcard infos -->
+                @{
+                    var dataDictGiftCard = new ViewDataDictionary();
+                    dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
+                    if (Model.GiftCard.IsGiftCard)
                     {
-                        x.Add().Text(@T("Reviews.ExistingReviews"))
-                                .Content(reviews)
-                                .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
-                                .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                        <div class="giftcard-infos line">
+                            @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                        </div>
                     }
+                }
 
-                    //generate an event
-                    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
-                })
+                <!-- quick links -->
+                <div class="quick-links line">
+                    @if (Model.HasSampleDownload)
+                    {
+                        <div>
+                            <a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
+                                <i class="fa fa-download"></i>
+                                @T("Products.DownloadSample")
+                            </a>
+                        </div>
+                    }
+                    @Html.Action("EmailAFriendButton", new { id = Model.Id })
+                    @Html.Action("AskQuestionButton", new { id = Model.Id })
+                    @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
+                    @if (!Model.AddToCart.DisableWishlistButton)
+                    {
+                        <div>
+                            <a data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                               href="#"
+                               class="ajax-cart-link"
+                               rel="nofollow"
+                               data-form-selector="#product-details-form"
+                               data-type="wishlist"
+                               data-action="add">
+                                <i class="fa fa-fw fa-heart"></i>
+                                @T("ShoppingCart.AddToWishlist")
+                            </a>
+                        </div>
+                    }
+                </div>
+                <!-- social share -->
+                @Html.Action("ShareButton")
+                <!-- tier prices -->
+                @Html.Action("ProductTierPrices", new { productId = Model.Id })
             
 
                 @Html.Action("RelatedProducts", new { productId = Model.Id })

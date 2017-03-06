@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageResizer;
+using NLog;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -15,6 +16,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Configuration;
 using SmartStore.Utilities;
+using ILogger = SmartStore.Core.Logging.ILogger;
 
 namespace SmartStore.Services.Media
 {   
@@ -23,6 +25,8 @@ namespace SmartStore.Services.Media
     /// </summary>
     public partial class PictureService : IPictureService
     {
+        private readonly NLog.ILogger _traceLogger = LogManager.GetCurrentClassLogger();
+
         #region Const
 
         private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
@@ -279,6 +283,7 @@ namespace SmartStore.Services.Media
                             }
                             catch (Exception ex)
                             {
+                                _traceLogger.Error(ex, "Error reading media file '{0}'.".FormatInvariant(source));
                                 _logger.Error("Error reading media file '{0}'.".FormatInvariant(source), ex);
                                 return string.Empty;
                             }
@@ -301,6 +306,7 @@ namespace SmartStore.Services.Media
                         }
                         catch (Exception ex)
                         {
+                            _traceLogger.Error(ex, "Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.LocalPath));
                             _logger.Error("Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.LocalPath), ex);
                             return string.Empty;
                         }
@@ -425,15 +431,21 @@ namespace SmartStore.Services.Media
             byte[] pictureBinary = null;
             if (picture != null)
                 pictureBinary = LoadPictureBinary(picture);
+
+            _traceLogger.Info("Picture binary is null:" + (pictureBinary == null || pictureBinary.Length == 0));
+
             if (picture == null || pictureBinary == null || pictureBinary.Length == 0)
             {
+                _traceLogger.Info("showDefault:" + showDefaultPicture);
                 if (showDefaultPicture)
                 {
                     url = GetDefaultPictureUrl(targetSize, defaultPictureType, storeLocation);
+                    _traceLogger.Info("default url:" + url);
                 }
                 return url;
             }
 
+            _traceLogger.Info("is new:" + picture.IsNew);
             if (picture.IsNew)
             {
                 _imageCache.DeleteCachedImages(picture);

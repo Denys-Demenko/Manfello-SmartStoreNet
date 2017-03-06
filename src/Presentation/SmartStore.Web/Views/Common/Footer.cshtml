@@ -64,6 +64,10 @@
 							{
 								<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
 							}
+                            @if (Model.TopicPageUrls.ContainsKey("ordercakeinfo"))
+                            {
+                                <li><a href="@Model.TopicPageUrls["ordercakeinfo"]">@T("OrderCakeInfo")</a></li>
+                            }
 							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
 							{
 								<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>

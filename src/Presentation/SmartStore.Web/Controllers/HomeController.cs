@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -8,6 +11,8 @@ using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Html;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
@@ -35,7 +40,8 @@ namespace SmartStore.Web.Controllers
 		private readonly ICommonServices _services;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
-		private readonly Lazy<IManufacturerService> _manufacturerService;
+        private readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
+        private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IQueuedEmailService> _queuedEmailService;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
@@ -43,8 +49,9 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
         private readonly Lazy<CustomerSettings> _customerSettings;
+        private readonly Lazy<OrderSettings> _orderSettings;
 
-		#endregion
+        #endregion
 
 		#region Constructors
 
@@ -52,19 +59,22 @@ namespace SmartStore.Web.Controllers
 			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
-			Lazy<IManufacturerService> manufacturerService,
+            Lazy<ISpecificationAttributeService> specificationAttributeService,
+            Lazy<IManufacturerService> manufacturerService,
 			Lazy<ITopicService> topicService,
 			Lazy<IQueuedEmailService> queuedEmailService,
 			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<ISitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
-            Lazy<CustomerSettings> customerSettings)
+            Lazy<CustomerSettings> customerSettings,
+            Lazy<OrderSettings> orderSettings)
         {
 			this._services = services;
 			this._categoryService = categoryService;
 			this._productService = productService;
-			this._manufacturerService = manufacturerService;
+		    this._specificationAttributeService = specificationAttributeService;
+		    this._manufacturerService = manufacturerService;
 			this._topicService = topicService;
 			this._queuedEmailService = queuedEmailService;
 			this._emailAccountService = emailAccountService;
@@ -72,6 +82,7 @@ namespace SmartStore.Web.Controllers
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
             this._customerSettings = customerSettings;
+		    this._orderSettings = orderSettings;
         }
         
         #endregion
@@ -131,7 +142,23 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ActionName("ContactUs")]
+        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        public ActionResult OrderCake()
+        {
+            var model = new OrderCakeModel()
+            {
+                Email = _services.WorkContext.CurrentCustomer.Email,
+                FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
+                DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
+
+            };
+
+            FillOrderSpecification(model);
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName("ContactUs")]
 		[CaptchaValidator]
 		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
 		{
@@ -194,7 +221,99 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [HttpPost, ActionName("OrderCake")]
+        [CaptchaValidator]
+        public ActionResult OrderCakeSend(OrderCakeModel model, bool captchaValid, HttpPostedFileBase uploadedFile)
+        {
+            //validate CAPTCHA
+            if (_captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
+            if (ModelState.IsValid)
+            {
+                string email = model.Email.Trim();
+                string fullName = model.FullName;
+                string subject = T("OrderCake.EmailSubject", _services.StoreContext.CurrentStore.Name);
+
+                var emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
+
+                string from = null;
+                string fromName = null;
+
+                string suggestions = Core.Html.HtmlUtils.FormatText(model.Suggestions, false, true, false, false, false, false);
+                string body = new StringBuilder(suggestions)
+                                                .AppendFormat("{5}Type: {0}{5}Filling: {1}{5}Layering: {2}{5}Size: {3}{5}Coating: {4}{5}", model.CakeType, model.Filling, model.Layering, model.Size, model.Coating, Environment.NewLine)
+                                                .ToString();
+
+                //required for some SMTP servers
+                if (_commonSettings.Value.UseSystemEmailForContactUsForm)
+                {
+                    from = emailAccount.Email;
+                    fromName = emailAccount.DisplayName;
+                    body = string.Format("<strong>From</strong>: {0} - {1}<br /><br />{2}",
+                                         Server.HtmlEncode(fullName),
+                                         Server.HtmlEncode(email), 
+                                         body.Replace(Environment.NewLine, "<br />"));
+                }
+                else
+                {
+                    from = email;
+                    fromName = fullName;
+                }
+
+                var emailToSend = new QueuedEmail
+                {
+                    From = from,
+                    FromName = fromName,
+                    To = emailAccount.Email,
+                    ToName = emailAccount.DisplayName,
+                    Priority = 5,
+                    Subject = subject,
+                    Body = body,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    EmailAccountId = emailAccount.Id,
+                    ReplyTo = email,
+                    ReplyToName = fullName
+                };
+
+                if (uploadedFile != null && !string.IsNullOrEmpty(uploadedFile.FileName))
+                {
+                    if (uploadedFile.ContentLength > _orderSettings.Value.MaxDesignFileSize)
+                    {
+                        throw new SmartException(T("Order.MaximumUploadedFileSize", SmartStore.Utilities.Prettifier.BytesToString(_orderSettings.Value.MaxDesignFileSize)));
+                    }
+
+                    byte[] fileBinary = uploadedFile.InputStream.ToByteArray();
+
+                    emailToSend.Attachments.Add(new QueuedEmailAttachment()
+                    {
+                        Data = fileBinary,
+                        QueuedEmail = emailToSend,
+                        Name = Path.GetFileName(uploadedFile.FileName),
+                        MimeType = uploadedFile.ContentType
+                    });    
+                }
+
+                _queuedEmailService.Value.InsertQueuedEmail(emailToSend);
+
+                model.SuccessfullySent = true;
+                model.Result = T("ContactUs.YourEnquiryHasBeenSent");
+
+                //activity log
+                _services.CustomerActivity.InsertActivity("PublicStore.OrderCake", T("ActivityLog.PublicStore.OrderCake"));
+
+                return View(model);
+            }
+
+            model.DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage;
+            FillOrderSpecification(model);
+
+            return View(model);
+        }
+
+        [RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult SitemapSeo()
 		{
 			if (!_commonSettings.Value.SitemapEnabled)
@@ -279,8 +398,72 @@ namespace SmartStore.Web.Controllers
 			return View(result);
 		}
 
+        private void FillOrderSpecification(OrderCakeModel model)
+        {
+            Category fillingsCategory = null;
+            Category cakesCategory = null;
+            var allCategories = _categoryService.Value.GetAllCategories().ToList();
+            foreach (var category in allCategories)
+            {
+                if (category.Name == "Начинки")
+                {
+                    fillingsCategory = category;
+                }
+                else if (category.Name == "Торти на замовлення")
+                {
+                    cakesCategory = category;
+                }
+            }
+
+            // cake types
+            model.CakeTypes.AddRange(allCategories.Where(x => x.ParentCategoryId == cakesCategory.Id)
+                                                  .Union(allCategories.Where(x => x.ParentCategoryId == 0 && x.Id != cakesCategory.Id && x.Id != fillingsCategory.Id))
+                                                  .Select(x => x.GetLocalized(y => y.Name))
+                                                  .Select(x => new SelectListItem() { Text = x, Value = x })
+                                                  .ToList());
+
+            // fillings
+            var fillingSearchContext = new ProductSearchContext();
+            fillingSearchContext.CategoryIds = new List<int> { fillingsCategory.Id };
+            fillingSearchContext.PageSize = int.MaxValue;
+
+            var fillings = _productService.Value.SearchProducts(fillingSearchContext);
+            model.Fillings.AddRange(fillings.Select(x => x.GetLocalized(y => y.Name))
+                                            .Select(x => new SelectListItem() { Text = x, Value = x })
+                                            .ToList());
+
+            var myOwnFilling = HtmlUtils.ConvertHtmlToPlainText(T("OrderCake.MyOwn").Text);
+            model.Fillings.Add(new SelectListItem() { Text = myOwnFilling, Value = myOwnFilling });
+
+            var allSpecifications = _specificationAttributeService.Value.GetSpecificationAttributes().ToList();
+            foreach (var specification in allSpecifications)
+            {
+                // Size
+                if (specification.Name == "Розмір")
+                {
+                    model.Sizes.AddRange(specification.SpecificationAttributeOptions
+                                                      .Select(x => x.GetLocalized(y => y.Name))
+                                                      .Select(x => new SelectListItem() { Text = x, Value = x }));
+                }
+                // Layering
+                else if (specification.Name == "Ярусність")
+                {
+                    model.Layerings.AddRange(specification.SpecificationAttributeOptions
+                                                      .Select(x => x.GetLocalized(y => y.Name))
+                                                      .Select(x => new SelectListItem() { Text = x, Value = x }));
+                }
+                // Coating
+                else if (specification.Name == "Оформлення")
+                {
+                    model.Coatings.AddRange(specification.SpecificationAttributeOptions
+                                                      .Select(x => x.GetLocalized(y => y.Name))
+                                                      .Select(x => new SelectListItem() { Text = x, Value = x }));
+                }
+            }
+        }
+
         #region helper functions
-        
+
         private string CheckButtonUrl(string url) 
         {
             if (!String.IsNullOrEmpty(url))

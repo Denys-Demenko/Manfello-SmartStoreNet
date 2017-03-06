@@ -1,0 +1,153 @@
+﻿@model OrderCakeModel
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.OrderCake").Text);
+}
+<div class="page order-cake-page">
+    @Html.Action("TopicBlock", "Topic", new { systemName = "OrderCake" })
+
+    <div class="page-body">
+        @Html.Widget("ordercake_top")
+        @if (Model.SuccessfullySent)
+        {
+            <div class="alert alert-info fade in">
+                <button class="close" data-dismiss="alert">x</button>
+                @Model.Result
+            </div>        
+        }
+        else
+        {
+            using (Html.BeginRouteForm("OrderCake", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+            <fieldset>
+
+                <legend>@T("PageTitle.OrderCake")</legend>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.FullName, new { @class="control-label required" , @for="FullName" } )
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.FullName, new { @class = "fullname", placeholder = T("ContactUs.FullName.Hint") })
+                        @Html.ValidationMessageFor(model => model.FullName)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Email, new {@class = "control-label required", @for = "Email"})
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.Email, new {@class = "email", @type = "email", placeholder = T("ContactUs.Email.Hint")})
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.PhoneNumber, new {@class = "control-label required", @for = "PhoneNumber"})
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.PhoneNumber, new {@class = "phone", @type = "tel", placeholder = T("OrderCake.PhoneNumber.Hint")})
+                        @Html.ValidationMessageFor(model => model.PhoneNumber)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.CakeType, new {@class = "control-label required", @for = "CakeType"})
+                    <div class="controls">
+                        @Html.DropDownListFor(model => model.CakeType, Model.CakeTypes, new {@class = "", @type = "text", style = "width: 216px" })
+                        @Html.ValidationMessageFor(model => model.CakeType)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Filling, new {@class = "control-label required", @for = "Filling"})
+                    <div class="controls">
+                        @Html.DropDownListFor(model => model.Filling, Model.Fillings, new {@class = "", @type = "text", style = "width: 216px" })
+                        @Html.ValidationMessageFor(model => model.Filling)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Layering, new {@class = "control-label required", @for = "Layering"})
+                    <div class="controls">
+                        @Html.DropDownListFor(model => model.Layering, Model.Layerings, new {@class = "", @type = "text", style = "width: 216px" })
+                        @Html.ValidationMessageFor(model => model.Layering)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Size, new {@class = "control-label required", @for = "Size"})
+                    <div class="controls">
+                        @Html.DropDownListFor(model => model.Size, Model.Sizes, new {@class = "", @type = "text", style = "width: 216px" })
+                        @Html.ValidationMessageFor(model => model.Size)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Coating, new { @class = "control-label required", @for = "Coating" })
+                    <div class="controls">
+                        @Html.DropDownListFor(model => model.Coating, Model.Coatings, new { @class = "", @type = "text", style = "width: 216px" })
+                        @Html.ValidationMessageFor(model => model.Coating)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Suggestions, new {@class = "control-label", @for = "Suggestions" })
+                    <div class="controls">
+                        @Html.TextAreaFor(model => model.Suggestions, new {@class = "enquiry", @type = "text", placeholder = T("OrderCake.Suggestions.Hint") })
+                        @Html.ValidationMessageFor(model => model.Suggestions)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">@(T("OrderCake.Design"))</label>
+                    <div class="controls">
+                        <span class="btn btn-primary fileinput-button">
+                            <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left" />
+                        </span>
+                        @Html.ValidationMessage("Design")
+                    </div>
+                    
+                </div>
+                    
+                <div class="control-group">
+                    @Html.LabelFor(model => model.OrderRulesAgreement, new { @class = "control-label required", @for = "OrderRulesAgreement" })
+                    <div class="controls">
+                        <div>
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(model => model.OrderRulesAgreement)
+                                @Html.Raw(T("OrderCake.OrderRulesAgreement.DetailText").Text.FormatWith(Url.RouteUrl("Topic", new { SystemName = "OrderCakeInfo" })
+                                ))
+                            </label>
+                        </div>
+                        <div>
+                            @Html.ValidationMessageFor(model => model.OrderRulesAgreement)
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.DisplayCaptcha)
+                {
+                    <div class="control-group">
+                        <div class="controls captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    </div>
+                }
+                
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" name="send-order" class="btn btn-primary">
+							<i class="fa fa-check"></i>
+							@T("order.toOrder")
+						</button>
+                    </div>
+                </div>
+
+            </fieldset> 
+            }
+
+            <label>@T("OrderCake.StorageInfo")</label>
+        }
+        @Html.Widget("ordercake_bottom")
+    </div>
+</div>

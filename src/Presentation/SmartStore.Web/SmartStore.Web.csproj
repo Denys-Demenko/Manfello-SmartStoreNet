@@ -351,6 +351,7 @@
     <Compile Include="Models\Checkout\CheckoutConfirmModel.cs" />
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
+    <Compile Include="Models\Common\OrderCakeModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
     <Compile Include="Models\Common\ContactsModel.cs" />
     <Compile Include="Models\Common\PhonesModel.cs" />
@@ -438,16 +439,19 @@
     <Compile Include="Validators\Catalog\ProductEmailAFriendValidator.cs" />
     <Compile Include="Validators\Catalog\ProductReviewsValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
+    <Compile Include="Validators\Common\OrderCakeValidator.cs" />
     <Compile Include="Validators\Install\InstallValidator.cs" />
     <Compile Include="Validators\News\NewsItemValidator.cs" />
     <Compile Include="Validators\Customer\PasswordRecoveryConfirmValidator.cs" />
     <Compile Include="Validators\Customer\PasswordRecoveryValidator.cs" />
+    <Compile Include="Validators\PhoneValidator.cs" />
     <Compile Include="Validators\PrivateMessages\SendPrivateMessageValidator.cs" />
     <Compile Include="Validators\ShoppingCart\WishlistEmailAFriendValidator.cs" />
     <Compile Include="Validators\Customer\ChangePasswordValidator.cs" />
     <Compile Include="Validators\Customer\RegisterValidator.cs" />
     <Compile Include="Validators\Customer\CustomerInfoValidator.cs" />
     <Compile Include="Validators\Common\ContactUsValidator.cs" />
+    <Compile Include="Validators\ValidatorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="404.html" />
@@ -952,6 +956,7 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Scripts\underscore.min.js" />
+    <Content Include="Settings.Hostpro.txt" />
     <Content Include="Settings.txt" />
     <Content Include="Settings.Ce.txt" />
     <Content Include="Themes\AlphaBlack\preview.png" />
@@ -1593,6 +1598,8 @@
     <Content Include="Views\Common\Contacts.cshtml" />
     <Content Include="Views\Common\Phones.Mobile.cshtml" />
     <Content Include="Views\Common\Contacts.Mobile.cshtml" />
+    <Content Include="Views\Common\OrderAndPay.cshtml" />
+    <Content Include="Views\Home\OrderCake.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
