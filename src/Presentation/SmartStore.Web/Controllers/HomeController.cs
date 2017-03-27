@@ -143,7 +143,7 @@ namespace SmartStore.Web.Controllers
 		}
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
-        public ActionResult OrderCake()
+        public ActionResult OrderCake(int? id)
         {
             var model = new OrderCakeModel()
             {
@@ -154,6 +154,37 @@ namespace SmartStore.Web.Controllers
             };
 
             FillOrderSpecification(model);
+
+            if (id != null)
+            {
+                var product = _productService.Value.GetProductById(id.Value);
+                model.SKU = product.Sku;
+
+                var specs = _specificationAttributeService.Value.GetProductSpecificationAttributesByProductId(id.Value);
+                foreach (var spec in specs)
+                {
+                    if (spec.SpecificationAttributeOption.SpecificationAttribute.Name == "Оформлення")
+                    {
+                        model.Coating = spec.SpecificationAttributeOption.GetLocalized(x => x.Name);
+                    }
+                    else if (spec.SpecificationAttributeOption.SpecificationAttribute.Name == "Розмір")
+                    {
+                        model.Size = spec.SpecificationAttributeOption.GetLocalized(x => x.Name);
+                    }
+                    else if (spec.SpecificationAttributeOption.SpecificationAttribute.Name == "Ярусність")
+                    {
+                        model.Layering = spec.SpecificationAttributeOption.GetLocalized(x => x.Name);
+                    }
+                    else if (spec.SpecificationAttributeOption.SpecificationAttribute.Name == "Оформлення")
+                    {
+                        model.Coating = spec.SpecificationAttributeOption.GetLocalized(x => x.Name);
+                    }
+                    else if (spec.SpecificationAttributeOption.SpecificationAttribute.Name == "Начинка")
+                    {
+                        model.Filling = spec.SpecificationAttributeOption.GetLocalized(x => x.Name);
+                    }
+                }
+            }
 
             return View(model);
         }
@@ -244,7 +275,14 @@ namespace SmartStore.Web.Controllers
 
                 string suggestions = Core.Html.HtmlUtils.FormatText(model.Suggestions, false, true, false, false, false, false);
                 string body = new StringBuilder(suggestions)
-                                                .AppendFormat("{5}Type: {0}{5}Filling: {1}{5}Layering: {2}{5}Size: {3}{5}Coating: {4}{5}", model.CakeType, model.Filling, model.Layering, model.Size, model.Coating, Environment.NewLine)
+                                                .AppendFormat("{5}Type: {0}{5}Filling: {1}{5}Layering: {2}{5}Size: {3}{5}Coating: {4}{5}SKU: {6}{5}", 
+                                                              model.CakeType, 
+                                                              model.Filling, 
+                                                              model.Layering, 
+                                                              model.Size, 
+                                                              model.Coating, 
+                                                              Environment.NewLine,
+                                                              model.SKU)
                                                 .ToString();
 
                 //required for some SMTP servers

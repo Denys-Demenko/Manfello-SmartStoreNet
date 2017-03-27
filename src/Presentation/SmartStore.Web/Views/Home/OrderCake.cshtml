@@ -20,7 +20,7 @@
         }
         else
         {
-            using (Html.BeginRouteForm("OrderCake", FormMethod.Post, new { @class = "form-horizontal" }))
+            using (Html.BeginRouteForm("OrderCake", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
             {
             <fieldset>
 
@@ -47,6 +47,14 @@
                     <div class="controls">
                         @Html.TextBoxFor(model => model.PhoneNumber, new {@class = "phone", @type = "tel", placeholder = T("OrderCake.PhoneNumber.Hint")})
                         @Html.ValidationMessageFor(model => model.PhoneNumber)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.SKU, new { @class = "control-label", @for = "SKU" })
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.SKU, new { @class = "", @type = "", placeholder = T("Products.Sku") })
+                        @Html.ValidationMessageFor(model => model.SKU)
                     </div>
                 </div>
 

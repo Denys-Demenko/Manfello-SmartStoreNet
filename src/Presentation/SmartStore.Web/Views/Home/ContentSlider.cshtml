@@ -51,16 +51,16 @@
                 if(slide.Published)
                 {
                     <li class="slide">
-                        @if (!String.IsNullOrEmpty(@slide.Title))
+                        @*@if (!String.IsNullOrEmpty(@slide.Title))
                         {
 			                <h2 class="title">@Html.Raw(@slide.Title)</h2>
                         }
                         @if (!String.IsNullOrEmpty(@slide.Text))
                         {
 			                <div class="info">@Html.Raw(slide.Text)</div>
-                        }
+                        }*@
 
-                        @if (slide.Button1.Published || slide.Button2.Published || slide.Button3.Published)
+                        @*@if (slide.Button1.Published || slide.Button2.Published || slide.Button3.Published)
                         {
                             <div class="buttons">
                                 @if (slide.Button1.Published && slide.Button1.Url.HasValue())
@@ -76,11 +76,15 @@
                                     <a class="btn @slide.Button3.Type" href="@slide.Button3.Url">@slide.Button3.Text</a>
                                 }
                             </div>
-                        }
+                        }*@
 
                         @if (!String.IsNullOrEmpty(@slide.PictureUrl))
                         {
-                            <div class="picture"><img src="@Url.Content(slide.PictureUrl)" alt="@slide.Title" /></div>
+                            <div class="picture">
+                                <a href="@slide.Button1.Url">
+                                    <img src="@Url.Content(slide.PictureUrl)" alt="@slide.Title" />
+                                </a>
+                            </div>
                         }
 		            </li>
                 }

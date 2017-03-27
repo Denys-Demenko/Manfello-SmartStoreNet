@@ -34,6 +34,9 @@ namespace SmartStore.Web.Models.Common
 		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 
+        [SmartResourceDisplayName("Products.Sku")]
+        public string SKU { get; set; }
+
         [SmartResourceDisplayName("OrderCake.CakeType")]
         public string CakeType { get; set; }
         public ICollection<SelectListItem> CakeTypes { get; private set; }

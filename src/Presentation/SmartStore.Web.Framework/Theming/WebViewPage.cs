@@ -46,6 +46,12 @@ namespace SmartStore.Web.Framework.Theming
 					_currentCategoryId = id;
 				}
 
+                // Make 'Order cakes' category expanded by default
+                if (_currentCategoryId == 0)
+                {
+                    _currentCategoryId = 1;
+                }
+
 				return _currentCategoryId.Value;
             }
         }
