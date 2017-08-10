@@ -33,6 +33,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Topics;
@@ -85,8 +86,9 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
+	    private readonly Lazy<IEmailAccountService> _emailAccountService;
 
-        public CommonController(
+	    public CommonController(
 			ICommonServices services,
 			ITopicService topicService,
             Lazy<ILanguageService> languageService,
@@ -118,7 +120,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<IPictureService> pictureService,
 			Lazy<IManufacturerService> manufacturerService,
 			Lazy<ICategoryService> categoryService,
-			Lazy<IProductService> productService)
+			Lazy<IProductService> productService,
+            Lazy<IEmailAccountService> emailAccountService)
         {
 			this._services = services;
 			this._topicService = topicService;
@@ -154,6 +157,7 @@ namespace SmartStore.Web.Controllers
 			this._manufacturerService = manufacturerService;
 			this._categoryService = categoryService;
 			this._productService = productService;
+            this._emailAccountService = emailAccountService;
         }
 
         #region Utilities
@@ -693,7 +697,8 @@ namespace SmartStore.Web.Controllers
         public ActionResult Contacts()
         {
             var model = new ContactsModel();
-            model.Contacts.Add(new ContactModel() { Contact = "info@manfello.com.ua" });
+            var emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
+            model.Contacts.Add(new ContactModel() { Contact = emailAccount.Email });
 
             return PartialView(model);
         }

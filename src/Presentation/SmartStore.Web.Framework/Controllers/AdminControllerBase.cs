@@ -81,7 +81,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// </summary>
 		protected ActionResult AccessDeniedPartialView() 
 		{
-			return PartialView("~/Administration/Views/Security/AccessDenied.cshtml");
+			return PartialView("~/Areas/Admin/Views/Security/AccessDenied.cshtml");
 		}
     }
 }

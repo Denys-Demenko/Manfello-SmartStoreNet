@@ -6,7 +6,7 @@ namespace SmartStore.Web.Framework.Theming
 	/// Instructs the view engine to additionally search in the admin area for views.
 	/// </summary>
 	/// <remarks>
-	/// The "admin area" corresponds to the <c>~/Administration</c> base folder.
+	/// The "admin area" corresponds to the <c>~/Areas/Admin</c> base folder.
 	/// This attribute is useful in plugins - which usually are areas on its own - where views
 	/// should be rendered as part of the admin backend.
 	/// Without this attribute the view resolver would directly fallback to the default nameless area
@@ -22,8 +22,8 @@ namespace SmartStore.Web.Framework.Theming
 			// add extra view location formats to all view results (even the partial ones)
 			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[] 
 			{
-				"~/Administration/Views/{1}/{0}",
-				"~/Administration/Views/Shared/{0}"
+				"~/Areas/Admin/Views/{1}/{0}",
+				"~/Areas/Admin/Views/Shared/{0}"
 			};
 		}
 

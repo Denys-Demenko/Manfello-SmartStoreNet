@@ -271,14 +271,14 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			if (groupName.HasValue())
 			{
-				string path = "~/Administration/Content/images/icon-plugin-{0}.png".FormatInvariant(groupName.ToLower());
+				string path = "~/Areas/Admin/Content/images/icon-plugin-{0}.png".FormatInvariant(groupName.ToLower());
 				if (File.Exists(CommonHelper.MapPath(path, false)))
 				{
 					return path;
 				}
 			}
 
-			return "~/Administration/Content/images/icon-plugin-default.png";
+			return "~/Areas/Admin/Content/images/icon-plugin-default.png";
 		}
 
 		public void ActivateDependentWidgets(ProviderMetadata parent, bool activate)
