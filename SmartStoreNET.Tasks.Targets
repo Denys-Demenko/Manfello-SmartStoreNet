@@ -71,6 +71,7 @@
 		<CallTarget Targets="Clean"/>
 		<CallTarget Targets="Compile"/>
 		<CallTarget Targets="Stage"/>
+		<CallTarget Targets="Pre-Zip"/>
 		<CallTarget Targets="Package-Zip"/>
 	</Target>
 	
@@ -160,6 +161,11 @@
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@validationKey" Value="AutoGenerate" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@decryptionKey" Value="AutoGenerate" />
 
+	</Target>
+	
+	<Target Name="Pre-Zip">
+	    <Delete Files="$(StageFolder)\Settings.txt" ContinueOnError="false" />
+		<RemoveDir Directories="$(StageFolder)\Media" ContinueOnError="false" />
 	</Target>
   
 	<Target Name="Package-Zip">
