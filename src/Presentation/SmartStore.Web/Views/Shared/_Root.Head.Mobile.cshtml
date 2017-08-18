@@ -3,6 +3,12 @@
 @using SmartStore.Core.Infrastructure.DependencyManagement;
 
 @{
+    // add metrics
+    Html.AppendScriptParts(ResourceLocation.Foot,
+        //"~/Scripts/metrics/yandex.js",
+        "~/Scripts/metrics/google.js"
+        );
+
     // add js assets
     Html.AppendScriptParts(ResourceLocation.Head,
         "~/Scripts/jquery-2.1.1.js",

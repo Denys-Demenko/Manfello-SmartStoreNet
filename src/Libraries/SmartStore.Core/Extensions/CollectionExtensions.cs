@@ -29,5 +29,20 @@ namespace SmartStore
         {
             return (source == null || source.Count == 0);
         }
+
+        public static ICollection<T> WithDefaultItem<T>(this ICollection<T> source, T defaultItem)
+        {
+            var list = source as IList<T>;
+            if (list != null)
+            {
+                list.Insert(0, defaultItem);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+            
+            return source;
+        }
     }
 }

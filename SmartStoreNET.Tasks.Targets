@@ -132,24 +132,6 @@
 		<!-- copy the migration sql scripts to the stage directory -->
 		<Copy SourceFiles="@(MigrationFiles)" DestinationFolder="$(StageFolder)\App_Data\Migrations\%(RecursiveDir)" />
 
-		<!-- publish SmartStore.Admin -->
-		<MSBuild Projects="$(WebFolder)\Administration\SmartStore.Admin.csproj"
-		   Targets="ResolveReferences;_CopyWebApplication"
-		   Properties="WebProjectOutputDir=$(StageFolder)\Administration\;
-		   OutDir=$(StageFolder)\Administration\bin\;Configuration=$(Configuration)" />
-
-		<!-- move SmartStore.Admin/bin/ to the root bin/ -->
-        <CreateItem Include="$(StageFolder)\Administration\bin\*.dll">
-            <Output TaskParameter="Include" ItemName="AdminCompileOutput" />
-        </CreateItem>
-		<Copy SourceFiles="@(AdminCompileOutput)" DestinationFolder="$(StageFolder)\bin\" />
-
-		<!-- delete the bin in SmartStore.Admin -->
-		<RemoveDir Directories="$(StageFolder)\Administration\bin\" />
-
-		<!-- delete the packages.config files -->
-		<Delete Files="$(StageFolder)\Administration\packages.config; $(StageFolder)\packages.config"/>
-
 		<!-- copy \Media\uploaded\ folder to stage -->
 		<!--<RemoveDir Directories="$(StageFolder)\Media\uploaded\" />
 		<Copy SourceFiles="@(UploadedImages)" DestinationFolder="$(StageFolder)\Media\uploaded\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />-->

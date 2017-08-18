@@ -51,6 +51,8 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<CustomerSettings> _customerSettings;
         private readonly Lazy<OrderSettings> _orderSettings;
 
+        private readonly SelectListItem _emptyListItem;
+
         #endregion
 
 		#region Constructors
@@ -83,6 +85,8 @@ namespace SmartStore.Web.Controllers
 			this._commonSettings = commonSettings;
             this._customerSettings = customerSettings;
 		    this._orderSettings = orderSettings;
+
+            _emptyListItem = new SelectListItem() { Text = T("OrderCake.PleaseChoose"), Value = string.Empty };
         }
         
         #endregion
@@ -454,7 +458,8 @@ namespace SmartStore.Web.Controllers
             }
 
             // cake types
-            model.CakeTypes.AddRange(allCategories.Where(x => x.ParentCategoryId == cakesCategory.Id)
+            model.CakeTypes.WithDefaultItem(_emptyListItem)
+                           .AddRange(allCategories.Where(x => x.ParentCategoryId == cakesCategory.Id)
                                                   .Union(allCategories.Where(x => x.ParentCategoryId == 0 && x.Id != cakesCategory.Id && x.Id != fillingsCategory.Id))
                                                   .Select(x => x.GetLocalized(y => y.Name))
                                                   .Select(x => new SelectListItem() { Text = x, Value = x })
@@ -466,7 +471,8 @@ namespace SmartStore.Web.Controllers
             fillingSearchContext.PageSize = int.MaxValue;
 
             var fillings = _productService.Value.SearchProducts(fillingSearchContext);
-            model.Fillings.AddRange(fillings.Select(x => x.GetLocalized(y => y.Name))
+            model.Fillings.WithDefaultItem(_emptyListItem)
+                          .AddRange(fillings.Select(x => x.GetLocalized(y => y.Name))
                                             .Select(x => new SelectListItem() { Text = x, Value = x })
                                             .ToList());
 
@@ -479,23 +485,26 @@ namespace SmartStore.Web.Controllers
                 // Size
                 if (specification.Name == "Розмір")
                 {
-                    model.Sizes.AddRange(specification.SpecificationAttributeOptions
+                    model.Sizes.WithDefaultItem(_emptyListItem)
+                               .AddRange(specification.SpecificationAttributeOptions
                                                       .Select(x => x.GetLocalized(y => y.Name))
                                                       .Select(x => new SelectListItem() { Text = x, Value = x }));
                 }
                 // Layering
                 else if (specification.Name == "Ярусність")
                 {
-                    model.Layerings.AddRange(specification.SpecificationAttributeOptions
-                                                      .Select(x => x.GetLocalized(y => y.Name))
-                                                      .Select(x => new SelectListItem() { Text = x, Value = x }));
+                    model.Layerings.WithDefaultItem(_emptyListItem)
+                                   .AddRange(specification.SpecificationAttributeOptions
+                                                          .Select(x => x.GetLocalized(y => y.Name))
+                                                          .Select(x => new SelectListItem() { Text = x, Value = x }));
                 }
                 // Coating
                 else if (specification.Name == "Оформлення")
                 {
-                    model.Coatings.AddRange(specification.SpecificationAttributeOptions
-                                                      .Select(x => x.GetLocalized(y => y.Name))
-                                                      .Select(x => new SelectListItem() { Text = x, Value = x }));
+                    model.Coatings.WithDefaultItem(_emptyListItem)
+                                  .AddRange(specification.SpecificationAttributeOptions
+                                                         .Select(x => x.GetLocalized(y => y.Name))
+                                                         .Select(x => new SelectListItem() { Text = x, Value = x }));
                 }
             }
         }
